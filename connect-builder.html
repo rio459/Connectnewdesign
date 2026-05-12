@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Leads – Appointments · Appy Pie Automate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:           #F5F6FB;
+    --canvas:       #FAFBFF;
+    --grid:         rgba(91,91,246,0.08);
+    --surface:      #FFFFFF;
+    --surface-2:    #F8F9FE;
+    --border:       #ECEEF5;
+    --border-strong:#DEE2EE;
+    --text:         #0F172A;
+    --text-2:       #475569;
+    --text-3:       #94A3B8;
+    --primary:      #5B5BF6;
+    --primary-600:  #4A4AE0;
+    --primary-50:   #EEF0FF;
+    --green:        #10B981;
+    --green-50:     #ECFDF5;
+    --amber:        #F59E0B;
+    --red:          #EF4444;
+    --gradient:     linear-gradient(135deg, #5B5BF6 0%, #8C7BFF 50%, #B57BFF 100%);
+    --gradient-glow:linear-gradient(135deg, rgba(91,91,246,0.18), rgba(181,123,255,0.18));
+    --shadow-sm:    0 1px 2px rgba(15,23,42,0.04);
+    --shadow:       0 6px 20px rgba(15,23,42,0.08);
+    --shadow-lg:    0 16px 40px rgba(15,23,42,0.12);
+    --radius:       14px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  /* ===== App layout ===== */
+  .app { display: grid; grid-template-columns: 64px 1fr; height: 100vh; }
+
+  /* ===== Sidebar ===== */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    align-items: center;
+    padding: 16px 0;
+    gap: 4px;
+    position: relative;
+    z-index: 5;
+  }
+  .brand-mark {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--gradient);
+    display: grid; place-items: center;
+    color: white; font-weight: 800;
+    box-shadow: 0 4px 12px rgba(91,91,246,0.35);
+    margin-bottom: 18px;
+    animation: brandPulse 4s ease-in-out infinite;
+  }
+  @keyframes brandPulse {
+    0%,100% { box-shadow: 0 4px 12px rgba(91,91,246,0.35); }
+    50%     { box-shadow: 0 4px 24px rgba(91,91,246,0.55); }
+  }
+  .side-btn {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: grid; place-items: center;
+    color: var(--text-3);
+    cursor: pointer;
+    position: relative;
+    transition: all .2s;
+  }
+  .side-btn:hover {
+    background: var(--primary-50);
+    color: var(--primary);
+    transform: translateX(2px);
+  }
+  .side-btn.active {
+    background: var(--primary-50);
+    color: var(--primary);
+  }
+  .side-btn.active::before {
+    content: '';
+    position: absolute; left: -16px; top: 8px;
+    width: 3px; height: 24px;
+    background: var(--gradient);
+    border-radius: 0 3px 3px 0;
+  }
+  .side-btn svg { width: 20px; height: 20px; }
+
+  /* ===== Main area ===== */
+  .main { display: grid; grid-template-rows: 64px 1fr; min-width: 0; }
+
+  /* Top bar */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+    z-index: 4;
+  }
+  .breadcrumb {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 15px; font-weight: 600;
+  }
+  .breadcrumb .crumb { color: var(--text-3); cursor: pointer; transition: color .15s;}
+  .breadcrumb .crumb:hover { color: var(--text-2);}
+  .breadcrumb .sep { color: var(--text-3); }
+  .breadcrumb .name {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--text);
+  }
+  .edit-name {
+    width: 26px; height: 26px; border-radius: 7px;
+    display: grid; place-items: center;
+    color: var(--text-3); cursor: pointer;
+    transition: all .15s;
+  }
+  .edit-name:hover { background: var(--primary-50); color: var(--primary); }
+  .edit-name svg { width: 14px; height: 14px; }
+
+  .status-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 11px;
+    background: var(--green-50);
+    color: var(--green);
+    font-size: 12px; font-weight: 600;
+    border-radius: 999px;
+    border: 1px solid rgba(16,185,129,0.20);
+  }
+  .status-chip .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 3px rgba(16,185,129,0.18);
+    animation: livePulse 2s ease-in-out infinite;
+  }
+  @keyframes livePulse {
+    0%,100% { box-shadow: 0 0 0 3px rgba(16,185,129,0.18); }
+    50%     { box-shadow: 0 0 0 7px rgba(16,185,129,0.04); }
+  }
+
+  .topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .icon-btn {
+    width: 36px; height: 36px; border-radius: 9px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    display: grid; place-items: center;
+    color: var(--text-2); cursor: pointer;
+    transition: all .15s;
+  }
+  .icon-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .icon-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .icon-btn svg { width: 16px; height: 16px; }
+
+  .activate-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 20px;
+    background: var(--gradient);
+    background-size: 200% 200%;
+    color: white; font-weight: 600; font-size: 13px;
+    border: none; border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(91,91,246,0.32);
+    position: relative; overflow: hidden;
+    animation: gradientShift 6s ease infinite;
+    transition: transform .15s, box-shadow .15s;
+  }
+  @keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .activate-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(91,91,246,0.42); }
+  .activate-btn::after {
+    content: '';
+    position: absolute; top: 0; left: -100%;
+    width: 60%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+    animation: shimmer 3s infinite;
+  }
+  @keyframes shimmer {
+    0%   { left: -100%; }
+    50%  { left: 120%; }
+    100% { left: 120%; }
+  }
+
+  /* ===== Workspace area ===== */
+  .workspace { display: grid; grid-template-columns: 1fr 380px; min-height: 0; }
+
+  /* Canvas */
+  .canvas {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(91,91,246,0.06), transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(181,123,255,0.05), transparent 40%),
+      var(--canvas);
+  }
+  .canvas-grid {
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle, var(--grid) 1px, transparent 1px);
+    background-size: 22px 22px;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
+  }
+
+  /* Floating background orbs */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: .35;
+    pointer-events: none;
+    animation: float 18s ease-in-out infinite;
+  }
+  .orb.a { width: 320px; height: 320px; background: #5B5BF6; top: -80px; left: -80px; }
+  .orb.b { width: 280px; height: 280px; background: #B57BFF; bottom: -100px; right: 280px; animation-delay: -6s; }
+  .orb.c { width: 220px; height: 220px; background: #7BAFFF; top: 40%; right: -60px; animation-delay: -12s;}
+  @keyframes float {
+    0%,100% { transform: translate(0,0); }
+    33%     { transform: translate(40px,-30px); }
+    66%     { transform: translate(-30px,40px); }
+  }
+
+  /* Flow container */
+  .flow {
+    position: relative;
+    height: 100%;
+    overflow-y: auto;
+    padding: 40px 24px 120px;
+  }
+  .flow-inner {
+    width: 360px;
+    margin: 0 auto;
+    display: flex; flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* Node */
+  .node {
+    width: 320px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 14px 16px;
+    position: relative;
+    transition: transform .25s cubic-bezier(.4,0,.2,1), box-shadow .25s, border-color .25s;
+    animation: nodeEnter .5s cubic-bezier(.4,0,.2,1) both;
+    cursor: pointer;
+  }
+  .node:nth-child(odd) { animation-delay: .05s; }
+  .node:nth-child(3) { animation-delay: .15s; }
+  .node:nth-child(5) { animation-delay: .25s; }
+  .node:nth-child(7) { animation-delay: .35s; }
+  @keyframes nodeEnter {
+    from { opacity: 0; transform: translateY(20px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0)    scale(1); }
+  }
+  .node:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+    border-color: var(--primary-50);
+  }
+  .node.selected {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(91,91,246,0.12), 0 16px 36px rgba(91,91,246,0.20);
+  }
+  .node.selected::before {
+    content: '';
+    position: absolute; inset: -2px;
+    border-radius: var(--radius);
+    background: var(--gradient);
+    z-index: -1;
+    opacity: .35;
+    filter: blur(12px);
+    animation: glowPulse 2.5s ease-in-out infinite;
+  }
+  @keyframes glowPulse {
+    0%,100% { opacity: .3; }
+    50%     { opacity: .55; }
+  }
+
+  .node-head {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 6px;
+  }
+  .node-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    color: white; font-weight: 700; font-size: 13px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+  }
+  .node-icon.gcal     { background: linear-gradient(135deg, #4285F4, #1A73E8);}
+  .node-icon.filter   { background: linear-gradient(135deg, #10B981, #059669);}
+  .node-icon.formatter{ background: linear-gradient(135deg, #14B8A6, #0EA5A0);}
+  .node-icon.sheets   { background: linear-gradient(135deg, #34A853, #1E8E3E);}
+  .node-icon.email    { background: linear-gradient(135deg, #EA4335, #C5392F);}
+  .node-icon svg { width: 18px; height: 18px; }
+
+  .node-meta { flex: 1; min-width: 0; }
+  .node-label {
+    font-size: 11px; font-weight: 600;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .node-title {
+    font-size: 15px; font-weight: 700;
+    color: var(--primary);
+    margin-top: 1px;
+    letter-spacing: -0.01em;
+  }
+  .node-sub {
+    font-size: 13px;
+    color: var(--text);
+    margin-top: 1px;
+    font-weight: 500;
+  }
+  .node-menu {
+    width: 28px; height: 28px; border-radius: 7px;
+    display: grid; place-items: center;
+    color: var(--text-3); cursor: pointer;
+    transition: all .15s;
+  }
+  .node-menu:hover { background: var(--surface-2); color: var(--text); }
+  .node-menu svg { width: 16px; height: 16px; }
+
+  .node-note {
+    padding: 8px 10px;
+    background: var(--surface-2);
+    border: 1px dashed var(--border-strong);
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--text-3);
+    margin-top: 8px;
+    transition: all .15s;
+  }
+  .node:hover .node-note { border-color: var(--primary); color: var(--text-2); }
+
+  .node-status {
+    position: absolute;
+    top: -8px; right: -8px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: white;
+    display: grid; place-items: center;
+    box-shadow: var(--shadow-sm);
+    border: 2px solid white;
+  }
+  .node-status.ok    { background: var(--green); }
+  .node-status.warn  { background: var(--amber); }
+  .node-status svg   { width: 12px; height: 12px; color: white; stroke-width: 3; }
+
+  /* Connector between nodes */
+  .connector {
+    height: 56px;
+    position: relative;
+    width: 2px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .connector::before {
+    content: '';
+    position: absolute;
+    left: 50%; transform: translateX(-50%);
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, rgba(91,91,246,0.4), rgba(91,91,246,0.15));
+    border-radius: 2px;
+  }
+  .connector::after {
+    content: '';
+    position: absolute;
+    left: 50%; transform: translateX(-50%);
+    top: 0;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+    box-shadow: 0 0 8px rgba(91,91,246,0.6);
+    animation: flow 2s linear infinite;
+  }
+  @keyframes flow {
+    0%   { top: -3px; opacity: 0; }
+    20%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { top: calc(100% - 3px); opacity: 0; }
+  }
+  .connector .plus {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: white;
+    border: 1.5px dashed var(--primary);
+    color: var(--primary);
+    display: grid; place-items: center;
+    cursor: pointer;
+    transition: all .2s;
+    z-index: 2;
+  }
+  .connector .plus:hover {
+    background: var(--primary);
+    color: white;
+    border-style: solid;
+    transform: translate(-50%, -50%) scale(1.15) rotate(90deg);
+    box-shadow: 0 4px 12px rgba(91,91,246,0.5);
+  }
+  .connector .plus svg { width: 14px; height: 14px; stroke-width: 2.5; }
+
+  /* End-of-flow marker */
+  .end-cap {
+    margin-top: 10px;
+    padding: 10px 16px;
+    background: rgba(91,91,246,0.06);
+    border: 1.5px dashed rgba(91,91,246,0.30);
+    color: var(--primary);
+    border-radius: 12px;
+    font-size: 12px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .end-cap:hover {
+    background: var(--primary-50);
+    border-style: solid;
+    transform: scale(1.05);
+  }
+  .end-cap svg { width: 14px; height: 14px; }
+
+  /* Zoom controls */
+  .zoom {
+    position: absolute;
+    bottom: 24px; left: 24px;
+    display: flex; align-items: center; gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow: var(--shadow);
+    z-index: 5;
+  }
+  .zoom button {
+    width: 30px; height: 30px;
+    border: none; background: transparent;
+    border-radius: 7px;
+    color: var(--text-2); cursor: pointer;
+    display: grid; place-items: center;
+    transition: all .15s;
+    font-size: 16px; font-weight: 600;
+  }
+  .zoom button:hover { background: var(--primary-50); color: var(--primary); }
+  .zoom .level { font-size: 13px; font-weight: 600; padding: 0 4px; min-width: 42px; text-align: center; }
+
+  .minimap-btn {
+    position: absolute;
+    bottom: 24px; right: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    padding: 8px 14px;
+    font-size: 12px; font-weight: 600;
+    color: var(--text-2);
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: all .15s;
+    z-index: 5;
+  }
+  .minimap-btn:hover { color: var(--primary); border-color: var(--primary); }
+  .minimap-btn svg { width: 14px; height: 14px;}
+
+  /* ===== Details panel ===== */
+  .details {
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    animation: slideIn .5s cubic-bezier(.4,0,.2,1) both;
+  }
+  @keyframes slideIn {
+    from { transform: translateX(40px); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+  }
+
+  .details-head {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .details-head h2 { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -0.01em;}
+  .details-head .ctrls { display: flex; gap: 4px; }
+  .details-head .ctrls button {
+    width: 28px; height: 28px;
+    border: none; background: transparent;
+    border-radius: 7px;
+    color: var(--text-3); cursor: pointer;
+    display: grid; place-items: center;
+    transition: all .15s;
+  }
+  .details-head .ctrls button:hover { background: var(--surface-2); color: var(--text); }
+  .details-head .ctrls svg { width: 16px; height: 16px; }
+
+  .details-body { padding: 16px 22px; overflow-y: auto; flex: 1; }
+
+  .field {
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex; align-items: flex-start; gap: 12px;
+    border: 1px solid transparent;
+    animation: fieldEnter .4s cubic-bezier(.4,0,.2,1) both;
+    transition: border-color .2s, transform .2s;
+  }
+  .field:hover { border-color: var(--primary-50); transform: translateX(2px); }
+  .field:nth-child(1) { animation-delay: .15s; }
+  .field:nth-child(2) { animation-delay: .25s; }
+  .field:nth-child(3) { animation-delay: .35s; }
+  .field:nth-child(4) { animation-delay: .45s; }
+  @keyframes fieldEnter {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .check-circle {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--green);
+    color: white;
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(16,185,129,0.30);
+    position: relative;
+  }
+  .check-circle svg {
+    width: 13px; height: 13px;
+    stroke-width: 3.5;
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    animation: drawCheck .6s ease-out .3s forwards;
+  }
+  @keyframes drawCheck {
+    to { stroke-dashoffset: 0; }
+  }
+
+  .field-body { flex: 1; min-width: 0; }
+  .field-label {
+    font-size: 12px; color: var(--text-2);
+    font-weight: 500; margin-bottom: 4px;
+  }
+  .field-value {
+    font-size: 15px; font-weight: 700;
+    color: var(--text); letter-spacing: -0.01em;
+    word-break: break-word;
+  }
+
+  .setup-block {
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 4px;
+    border: 1px solid var(--border);
+    animation: fieldEnter .4s cubic-bezier(.4,0,.2,1) .5s both;
+  }
+  .setup-block h3 {
+    margin: 0 0 10px;
+    font-size: 13px; font-weight: 600; color: var(--text);
+  }
+  .tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px;
+    background: white;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    font-size: 12px; font-weight: 600;
+    color: var(--text);
+    transition: all .15s;
+    cursor: pointer;
+  }
+  .tag:hover { border-color: var(--primary); color: var(--primary); }
+  .tag .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--primary);
+  }
+
+  .details-foot {
+    padding: 14px 22px 22px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .note {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px 12px;
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    border-radius: 10px;
+    color: #92400E;
+    font-size: 12px; line-height: 1.45;
+    margin-bottom: 12px;
+  }
+  .note svg { flex-shrink: 0; width: 16px; height: 16px; margin-top: 1px;}
+  .note b { font-weight: 700; }
+
+  .edit-setup {
+    width: 100%;
+    padding: 13px 18px;
+    background: var(--gradient);
+    background-size: 200% 200%;
+    color: white; font-weight: 600; font-size: 14px;
+    border: none; border-radius: 11px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(91,91,246,0.32);
+    animation: gradientShift 6s ease infinite;
+    transition: transform .15s, box-shadow .15s;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .edit-setup:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(91,91,246,0.45); }
+  .edit-setup svg { width: 16px; height: 16px; }
+
+  /* Tiny floating particles in canvas */
+  .particle {
+    position: absolute;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--primary);
+    opacity: .25;
+    pointer-events: none;
+    animation: rise 14s linear infinite;
+  }
+  .particle:nth-child(1){ left:10%; animation-delay: 0s;}
+  .particle:nth-child(2){ left:25%; animation-delay: 3s; background: #B57BFF;}
+  .particle:nth-child(3){ left:55%; animation-delay: 6s;}
+  .particle:nth-child(4){ left:75%; animation-delay: 9s; background: #7BAFFF;}
+  .particle:nth-child(5){ left:90%; animation-delay: 12s; background: #B57BFF;}
+  @keyframes rise {
+    0%   { bottom: -10px; opacity: 0; transform: translateX(0); }
+    10%  { opacity: .35; }
+    90%  { opacity: .35; }
+    100% { bottom: 110%; opacity: 0; transform: translateX(40px); }
+  }
+
+  @media (max-width: 1100px) {
+    .workspace { grid-template-columns: 1fr; }
+    .details { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand-mark">A</div>
+
+    <div class="side-btn active" title="Builder">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    </div>
+    <div class="side-btn" title="Connect">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </div>
+    <div class="side-btn" title="Copilot">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    </div>
+    <div class="side-btn" title="History">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <div class="side-btn" title="Accounts">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="6" r="1.5"/><circle cx="5" cy="12" r="1.5"/><circle cx="5" cy="18" r="1.5"/><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/></svg>
+    </div>
+    <div class="side-btn" title="MCP">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><polygon points="12 2 22 8.5 12 15 2 8.5 12 2"/><polyline points="2 15.5 12 22 22 15.5"/></svg>
+    </div>
+    <div class="side-btn" title="Tools">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+    </div>
+    <div class="side-btn" title="Help">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="breadcrumb">
+        <span class="crumb">My Connects</span>
+        <span class="sep">/</span>
+        <span class="name">My Leads – Appointments
+          <span class="edit-name" title="Rename"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
+        </span>
+      </div>
+      <span class="status-chip"><span class="dot"></span> Published</span>
+
+      <div class="topbar-actions">
+        <button class="icon-btn" title="Undo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        </button>
+        <button class="icon-btn" title="Redo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        </button>
+        <button class="icon-btn" title="Support">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-7h3z"/><path d="M3 19a2 2 0 0 0 2 2h1v-7H3z"/></svg>
+        </button>
+        <button class="icon-btn" title="Theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button class="activate-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Activate Connect
+        </button>
+      </div>
+    </header>
+
+    <!-- Workspace -->
+    <div class="workspace">
+
+      <!-- Canvas -->
+      <div class="canvas">
+        <div class="canvas-grid"></div>
+        <div class="orb a"></div>
+        <div class="orb b"></div>
+        <div class="orb c"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+
+        <div class="flow">
+          <div class="flow-inner">
+
+            <!-- TRIGGER NODE -->
+            <div class="node selected">
+              <div class="node-status ok">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="node-head">
+                <div class="node-icon gcal">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zM7 12h5v5H7z"/></svg>
+                </div>
+                <div class="node-meta">
+                  <div class="node-label">Trigger</div>
+                  <div class="node-title">Google Calendar</div>
+                  <div class="node-sub">New Event</div>
+                </div>
+                <div class="node-menu">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+                </div>
+              </div>
+              <div class="node-note">Add notes here…</div>
+            </div>
+
+            <div class="connector">
+              <div class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            </div>
+
+            <!-- FILTER NODE -->
+            <div class="node">
+              <div class="node-status ok">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="node-head">
+                <div class="node-icon filter">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                </div>
+                <div class="node-meta">
+                  <div class="node-label">Action</div>
+                  <div class="node-title">Filter By Connect</div>
+                  <div class="node-sub">Only continue if…</div>
+                </div>
+                <div class="node-menu">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+                </div>
+              </div>
+              <div class="node-note">Add notes here…</div>
+            </div>
+
+            <div class="connector">
+              <div class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            </div>
+
+            <!-- FORMATTER NODE -->
+            <div class="node">
+              <div class="node-status ok">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="node-head">
+                <div class="node-icon formatter">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <div class="node-meta">
+                  <div class="node-label">Action</div>
+                  <div class="node-title">Formatter By Connect</div>
+                  <div class="node-sub">Date / Time</div>
+                </div>
+                <div class="node-menu">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+                </div>
+              </div>
+              <div class="node-note">Add notes here…</div>
+            </div>
+
+            <div class="connector">
+              <div class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            </div>
+
+            <!-- SHEETS NODE -->
+            <div class="node">
+              <div class="node-status ok">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="node-head">
+                <div class="node-icon sheets">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+                </div>
+                <div class="node-meta">
+                  <div class="node-label">Action</div>
+                  <div class="node-title">Google Sheets</div>
+                  <div class="node-sub">Create Spreadsheet Row</div>
+                </div>
+                <div class="node-menu">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+                </div>
+              </div>
+              <div class="node-note">Add notes here…</div>
+            </div>
+
+            <div class="connector">
+              <div class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            </div>
+
+            <div class="end-cap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add next step
+            </div>
+          </div>
+        </div>
+
+        <!-- Zoom -->
+        <div class="zoom">
+          <button title="Zoom out">−</button>
+          <span class="level">70%</span>
+          <button title="Zoom in">+</button>
+          <button title="Reset view" style="margin-left:4px; border-left:1px solid var(--border); padding-left:8px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          </button>
+        </div>
+
+        <button class="minimap-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+          Mini-map
+        </button>
+      </div>
+
+      <!-- Details panel -->
+      <aside class="details">
+        <div class="details-head">
+          <h2>Trigger Details</h2>
+          <div class="ctrls">
+            <button title="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
+            <button title="Collapse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg></button>
+          </div>
+        </div>
+
+        <div class="details-body">
+          <div class="field">
+            <div class="check-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="field-body">
+              <div class="field-label">Trigger Application</div>
+              <div class="field-value">Google Calendar</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="check-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="field-body">
+              <div class="field-label">Trigger Event</div>
+              <div class="field-value">New Event</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="check-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="field-body">
+              <div class="field-label">Google Calendar Account</div>
+              <div class="field-value">rio@appypiellp.com</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="check-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="field-body">
+              <div class="field-label">Set Up Option</div>
+              <div class="field-value">Configured</div>
+            </div>
+          </div>
+
+          <div class="setup-block">
+            <h3>Events of Calendar</h3>
+            <div class="tag"><span class="dot"></span>Multi Calendar</div>
+          </div>
+        </div>
+
+        <div class="details-foot">
+          <div class="note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span><b>Preview mode</b> on. Click <b>Edit Setup</b> to make changes.</span>
+          </div>
+          <button class="edit-setup">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit Setup
+          </button>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
