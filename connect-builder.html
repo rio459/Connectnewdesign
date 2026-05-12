@@ -243,7 +243,7 @@
   }
   .flow-stage {
     position: relative;
-    width: 1200px;
+    width: 1440px;
     height: 640px;
     margin: 0 auto;
   }
@@ -315,7 +315,6 @@
     background: linear-gradient(135deg, #FFD86B 0%, #F59E0B 100%);
     box-shadow: 0 10px 28px rgba(245,158,11,0.40), inset 0 -6px 14px rgba(180,90,0,0.15);
     border: 3px solid #FFFAEB;
-    position: relative;
   }
   .shape-circle.selected {
     animation: ringPulse 2s ease-in-out infinite;
@@ -331,7 +330,6 @@
     clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
     background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%);
     filter: drop-shadow(0 8px 18px rgba(217,119,6,0.30));
-    position: relative;
   }
 
   /* Diamond (decision) */
@@ -340,19 +338,17 @@
     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
     background: linear-gradient(135deg, #FCD34D 0%, #EAB308 100%);
     filter: drop-shadow(0 8px 18px rgba(234,179,8,0.32));
-    position: relative;
   }
   .shape-diamond .shape-icon { max-width: 80px; }
 
   /* Rectangle (action) */
   .shape-rect {
+    width: 180px;
     background: var(--surface);
     border: 2px solid var(--border-strong);
     border-radius: 14px;
     padding: 12px 16px;
-    min-width: 160px;
     box-shadow: 0 6px 18px rgba(180,120,0,0.12);
-    position: relative;
   }
   .shape-rect.solid {
     background: linear-gradient(135deg, #FFC95A 0%, #C97A0A 100%);
@@ -781,7 +777,7 @@
               </circle>
 
               <!-- Sheets → Notify -->
-              <path id="p6" class="conn-line" d="M 1000 180 C 1020 180, 1025 180, 1040 180"/>
+              <path id="p6" class="conn-line" d="M 1000 180 C 1005 180, 1008 180, 1010 180"/>
               <circle r="4" class="conn-dot">
                 <animateMotion dur="2s" begin="1.5s" repeatCount="indefinite"><mpath href="#p6"/></animateMotion>
               </circle>
@@ -838,7 +834,7 @@
             </div>
 
             <!-- NOTIFY (rect) -->
-            <div class="flow-node shape-rect" style="left: 1040px; top: 145px;">
+            <div class="flow-node shape-rect" style="left: 1010px; top: 145px;">
               <div class="rect-label">Action</div>
               <div class="rect-name">Notify Slack</div>
               <div class="rect-sub">Channel: #leads</div>
