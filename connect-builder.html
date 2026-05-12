@@ -196,7 +196,38 @@
   }
 
   /* ===== Workspace area ===== */
-  .workspace { display: grid; grid-template-columns: 1fr 380px; min-height: 0; }
+  .workspace {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    min-height: 0;
+    transition: grid-template-columns .35s cubic-bezier(.4,0,.2,1);
+  }
+  .workspace.panel-expanded { grid-template-columns: 1fr 640px; }
+  .workspace.panel-hidden   { grid-template-columns: 1fr 0px; }
+  .workspace.panel-hidden .details { transform: translateX(100%); opacity: 0; pointer-events: none; }
+
+  /* Re-open tab when panel is hidden */
+  .reopen-tab {
+    position: fixed;
+    top: 50%; right: 0;
+    transform: translateY(-50%) translateX(100%);
+    background: var(--gradient);
+    color: white;
+    border: none;
+    border-radius: 12px 0 0 12px;
+    padding: 14px 10px;
+    cursor: pointer;
+    box-shadow: -6px 6px 18px rgba(245,158,11,0.30);
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    z-index: 50;
+    transition: transform .35s cubic-bezier(.4,0,.2,1);
+    writing-mode: vertical-rl;
+    font-weight: 600; font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  .reopen-tab svg { width: 14px; height: 14px; transform: rotate(180deg); }
+  .reopen-tab.show { transform: translateY(-50%) translateX(0); }
+  .reopen-tab:hover { box-shadow: -8px 8px 24px rgba(245,158,11,0.45); }
 
   /* Canvas */
   .canvas {
@@ -484,6 +515,7 @@
     display: flex; flex-direction: column;
     overflow: hidden;
     animation: slideIn .5s cubic-bezier(.4,0,.2,1) both;
+    transition: transform .35s cubic-bezier(.4,0,.2,1), opacity .25s;
   }
   @keyframes slideIn {
     from { transform: translateX(40px); opacity: 0; }
@@ -727,7 +759,7 @@
     </header>
 
     <!-- Workspace -->
-    <div class="workspace">
+    <div class="workspace" id="workspace">
 
       <!-- Canvas -->
       <div class="canvas">
@@ -784,7 +816,7 @@
             </svg>
 
             <!-- TRIGGER (circle) -->
-            <div class="flow-node shape-circle selected" style="left: 80px; top: 265px;">
+            <div class="flow-node shape-circle selected" data-node="trigger" style="left: 80px; top: 265px;">
               <div class="shape-icon">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
                 <span class="name">Google<br/>Calendar</span>
@@ -793,7 +825,7 @@
             </div>
 
             <!-- FILTER (hexagon) -->
-            <div class="flow-node shape-hex" style="left: 240px; top: 265px;">
+            <div class="flow-node shape-hex" data-node="filter" style="left: 240px; top: 265px;">
               <div class="shape-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
                 <span class="name">Filter</span>
@@ -803,7 +835,7 @@
             </div>
 
             <!-- DECISION (diamond) -->
-            <div class="flow-node shape-diamond" style="left: 445px; top: 255px;">
+            <div class="flow-node shape-diamond" data-node="decision" style="left: 445px; top: 255px;">
               <div class="shape-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
                 <span class="name">Has<br/>Guest?</span>
@@ -813,7 +845,7 @@
             </div>
 
             <!-- FORMATTER (rect) - Yes branch -->
-            <div class="flow-node shape-rect" style="left: 670px; top: 150px;">
+            <div class="flow-node shape-rect" data-node="formatter" style="left: 670px; top: 150px;">
               <div class="rect-label">Action</div>
               <div class="rect-name">Formatter</div>
               <div class="rect-sub">Date / Time</div>
@@ -822,7 +854,7 @@
             </div>
 
             <!-- SHEETS (rect solid) -->
-            <div class="flow-node shape-rect solid" style="left: 910px; top: 150px;">
+            <div class="flow-node shape-rect solid" data-node="sheets" style="left: 910px; top: 150px;">
               <div class="rect-label">Action</div>
               <div class="rect-name">Google Sheets</div>
               <div class="rect-sub">Create row</div>
@@ -831,7 +863,7 @@
             </div>
 
             <!-- NOTIFY (rect) -->
-            <div class="flow-node shape-rect" style="left: 1150px; top: 150px;">
+            <div class="flow-node shape-rect" data-node="notify" style="left: 1150px; top: 150px;">
               <div class="rect-label">Action</div>
               <div class="rect-name">Notify Slack</div>
               <div class="rect-sub">Channel: #leads</div>
@@ -839,7 +871,7 @@
             </div>
 
             <!-- SKIP (rect) - No branch -->
-            <div class="flow-node shape-rect" style="left: 670px; top: 420px;">
+            <div class="flow-node shape-rect" data-node="skip" style="left: 670px; top: 420px;">
               <div class="rect-label">End</div>
               <div class="rect-name">Skip</div>
               <div class="rect-sub">No guest invited</div>
@@ -866,16 +898,16 @@
       </div>
 
       <!-- Details panel -->
-      <aside class="details">
+      <aside class="details" id="detailsPanel">
         <div class="details-head">
-          <h2>Trigger Details</h2>
+          <h2 id="detailsTitle">Trigger Details</h2>
           <div class="ctrls">
-            <button title="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
-            <button title="Collapse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg></button>
+            <button id="expandBtn" title="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
+            <button id="hideBtn" title="Hide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg></button>
           </div>
         </div>
 
-        <div class="details-body">
+        <div class="details-body" id="detailsBody">
           <div class="field">
             <div class="check-circle">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
@@ -937,6 +969,174 @@
     </div>
   </div>
 </div>
+
+<!-- Re-open tab (shown when panel is hidden) -->
+<button class="reopen-tab" id="reopenTab" title="Show details panel">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+  Details
+</button>
+
+<script>
+(function () {
+  /* ===== Panel data per node ===== */
+  var NODE_DATA = {
+    trigger: {
+      title: 'Trigger Details',
+      fields: [
+        { label: 'Trigger Application',   value: 'Google Calendar' },
+        { label: 'Trigger Event',         value: 'New Event' },
+        { label: 'Google Calendar Account', value: 'rio@appypiellp.com' },
+        { label: 'Set Up Option',         value: 'Configured' }
+      ],
+      setupTitle: 'Events of Calendar',
+      tag: 'Multi Calendar'
+    },
+    filter: {
+      title: 'Filter Details',
+      fields: [
+        { label: 'Action',     value: 'Filter By Connect' },
+        { label: 'Condition',  value: 'Has Guest = True' },
+        { label: 'Match Mode', value: 'Strict' }
+      ],
+      setupTitle: 'Field watched',
+      tag: 'guests[]'
+    },
+    decision: {
+      title: 'Decision Details',
+      fields: [
+        { label: 'Question',  value: 'Has Guest?' },
+        { label: 'Yes Path',  value: 'Continue to Formatter' },
+        { label: 'No Path',   value: 'Skip & End' }
+      ],
+      setupTitle: 'Branch logic',
+      tag: 'guests.length > 0'
+    },
+    formatter: {
+      title: 'Formatter Details',
+      fields: [
+        { label: 'Action',     value: 'Formatter By Connect' },
+        { label: 'Operation',  value: 'Date / Time' },
+        { label: 'Input',      value: 'event.start' },
+        { label: 'Format',     value: 'MMM D, YYYY h:mm A' }
+      ],
+      setupTitle: 'Timezone',
+      tag: 'America/New_York'
+    },
+    sheets: {
+      title: 'Google Sheets Details',
+      fields: [
+        { label: 'Action',         value: 'Create Spreadsheet Row' },
+        { label: 'Account',        value: 'rio@appypiellp.com' },
+        { label: 'Spreadsheet',    value: 'Leads – Appointments' },
+        { label: 'Worksheet',      value: 'Inbound' }
+      ],
+      setupTitle: 'Columns mapped',
+      tag: 'name · email · time'
+    },
+    notify: {
+      title: 'Notify Slack Details',
+      fields: [
+        { label: 'Action',  value: 'Send Channel Message' },
+        { label: 'Workspace', value: 'Appy Pie' },
+        { label: 'Channel', value: '#leads' },
+        { label: 'Message', value: 'New appointment scheduled' }
+      ],
+      setupTitle: 'Mention',
+      tag: '@sales'
+    },
+    skip: {
+      title: 'Skip Step Details',
+      fields: [
+        { label: 'Type',   value: 'End of branch' },
+        { label: 'Reason', value: 'No guest invited' }
+      ],
+      setupTitle: 'Behavior',
+      tag: 'Stop silently'
+    }
+  };
+
+  /* ===== Element refs ===== */
+  var workspace   = document.getElementById('workspace');
+  var panel       = document.getElementById('detailsPanel');
+  var title       = document.getElementById('detailsTitle');
+  var body        = document.getElementById('detailsBody');
+  var expandBtn   = document.getElementById('expandBtn');
+  var hideBtn     = document.getElementById('hideBtn');
+  var reopenTab   = document.getElementById('reopenTab');
+  var nodes       = document.querySelectorAll('.flow-node');
+
+  /* ===== Render panel content for given node key ===== */
+  function renderPanel (key) {
+    var data = NODE_DATA[key];
+    if (!data) return;
+
+    title.textContent = data.title;
+
+    var html = '';
+    data.fields.forEach(function (f) {
+      html +=
+        '<div class="field">' +
+          '<div class="check-circle">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>' +
+          '</div>' +
+          '<div class="field-body">' +
+            '<div class="field-label">' + f.label + '</div>' +
+            '<div class="field-value">' + f.value + '</div>' +
+          '</div>' +
+        '</div>';
+    });
+
+    if (data.setupTitle) {
+      html +=
+        '<div class="setup-block">' +
+          '<h3>' + data.setupTitle + '</h3>' +
+          '<div class="tag"><span class="dot"></span>' + data.tag + '</div>' +
+        '</div>';
+    }
+
+    body.innerHTML = html;
+  }
+
+  /* ===== Node click → select + open panel ===== */
+  nodes.forEach(function (node) {
+    node.addEventListener('click', function (e) {
+      e.stopPropagation();
+      // Update selection state
+      nodes.forEach(function (n) { n.classList.remove('selected'); });
+      node.classList.add('selected');
+      // Render details for this node
+      renderPanel(node.getAttribute('data-node'));
+      // Show panel if it was hidden
+      workspace.classList.remove('panel-hidden');
+      reopenTab.classList.remove('show');
+    });
+  });
+
+  /* ===== Expand / collapse-width toggle ===== */
+  expandBtn.addEventListener('click', function () {
+    workspace.classList.toggle('panel-expanded');
+    // Swap icon between expand and shrink
+    var isExpanded = workspace.classList.contains('panel-expanded');
+    expandBtn.title = isExpanded ? 'Restore' : 'Expand';
+    expandBtn.innerHTML = isExpanded
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+  });
+
+  /* ===== Hide button ===== */
+  hideBtn.addEventListener('click', function () {
+    workspace.classList.add('panel-hidden');
+    workspace.classList.remove('panel-expanded');
+    reopenTab.classList.add('show');
+  });
+
+  /* ===== Re-open tab ===== */
+  reopenTab.addEventListener('click', function () {
+    workspace.classList.remove('panel-hidden');
+    reopenTab.classList.remove('show');
+  });
+})();
+</script>
 
 </body>
 </html>
