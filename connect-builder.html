@@ -235,216 +235,209 @@
     66%     { transform: translate(-30px,40px); }
   }
 
-  /* Flow container */
+  /* === Flow canvas (horizontal layout with mixed shapes) === */
   .flow {
     position: relative;
     height: 100%;
-    overflow-y: auto;
-    padding: 40px 24px 120px;
+    overflow: auto;
   }
-  .flow-inner {
-    width: 360px;
+  .flow-stage {
+    position: relative;
+    width: 1200px;
+    height: 640px;
     margin: 0 auto;
-    display: flex; flex-direction: column;
-    align-items: center;
-    gap: 0;
   }
 
-  /* Node - pill / oval shape */
-  .node {
-    width: 340px;
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 38px;   /* large radius for oval / pill */
-    box-shadow: var(--shadow-sm);
-    padding: 18px 22px 16px;
-    position: relative;
-    transition: transform .25s cubic-bezier(.4,0,.2,1), box-shadow .25s, border-color .25s;
-    animation: nodeEnter .5s cubic-bezier(.4,0,.2,1) both;
+  /* SVG layer with bezier connectors */
+  .connections {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .conn-line {
+    fill: none;
+    stroke: rgba(245,158,11,0.50);
+    stroke-width: 2.5;
+    stroke-dasharray: 8 4;
+    animation: dashFlow 1.2s linear infinite;
+  }
+  .conn-line.yes { stroke: rgba(101,163,13,0.70); }
+  .conn-line.no  { stroke: rgba(220,38,38,0.55); }
+  @keyframes dashFlow { to { stroke-dashoffset: -24; } }
+  .conn-dot {
+    fill: var(--primary);
+    filter: drop-shadow(0 0 6px rgba(245,158,11,0.75));
+  }
+  .conn-dot.yes { fill: var(--green); filter: drop-shadow(0 0 6px rgba(101,163,13,0.8)); }
+  .conn-dot.no  { fill: var(--red);   filter: drop-shadow(0 0 6px rgba(220,38,38,0.75)); }
+
+  /* Generic flow-node base */
+  .flow-node {
+    position: absolute;
+    z-index: 2;
     cursor: pointer;
+    animation: nodeEnter .55s cubic-bezier(.4,0,.2,1) both;
+    transition: transform .25s cubic-bezier(.4,0,.2,1), filter .25s;
   }
-  .node:nth-child(odd) { animation-delay: .05s; }
-  .node:nth-child(3) { animation-delay: .15s; }
-  .node:nth-child(5) { animation-delay: .25s; }
-  .node:nth-child(7) { animation-delay: .35s; }
+  .flow-node:nth-child(2) { animation-delay: .05s; }
+  .flow-node:nth-child(3) { animation-delay: .12s; }
+  .flow-node:nth-child(4) { animation-delay: .18s; }
+  .flow-node:nth-child(5) { animation-delay: .24s; }
+  .flow-node:nth-child(6) { animation-delay: .30s; }
+  .flow-node:nth-child(7) { animation-delay: .36s; }
+  .flow-node:nth-child(8) { animation-delay: .42s; }
   @keyframes nodeEnter {
-    from { opacity: 0; transform: translateY(20px) scale(.97); }
-    to   { opacity: 1; transform: translateY(0)    scale(1); }
+    from { opacity: 0; transform: scale(.82); }
+    to   { opacity: 1; transform: scale(1); }
   }
-  .node:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow);
-    border-color: var(--primary-50);
+  .flow-node:hover { transform: translateY(-2px) scale(1.04); z-index: 5; }
+
+  .shape-icon {
+    position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center;
+    color: white;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.18);
+    pointer-events: none;
   }
-  .node.selected {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(245,158,11,0.18), 0 16px 36px rgba(245,158,11,0.25);
-  }
-  .node.selected::before {
-    content: '';
-    position: absolute; inset: -2px;
-    border-radius: 38px;
-    background: var(--gradient);
-    z-index: -1;
-    opacity: .45;
-    filter: blur(14px);
-    animation: glowPulse 2.5s ease-in-out infinite;
-  }
-  @keyframes glowPulse {
-    0%,100% { opacity: .3; }
-    50%     { opacity: .55; }
+  .shape-icon svg { width: 18px; height: 18px; margin-bottom: 4px; }
+  .shape-icon .name {
+    font-size: 12px; font-weight: 700; line-height: 1.1; max-width: 90px;
   }
 
-  .node-head {
-    display: flex; align-items: center; gap: 12px;
-    margin-bottom: 6px;
-  }
-  .node-icon {
-    width: 42px; height: 42px;
-    border-radius: 50%;   /* circular icon */
-    display: grid; place-items: center;
-    flex-shrink: 0;
-    color: white; font-weight: 700; font-size: 13px;
-    box-shadow: 0 4px 10px rgba(180,120,0,0.18);
+  /* Circle (trigger) */
+  .shape-circle {
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFD86B 0%, #F59E0B 100%);
+    box-shadow: 0 10px 28px rgba(245,158,11,0.40), inset 0 -6px 14px rgba(180,90,0,0.15);
+    border: 3px solid #FFFAEB;
     position: relative;
   }
-  /* Warm-palette node icons — kept distinguishable but harmonious */
-  .node-icon.gcal     { background: linear-gradient(135deg, #FFD86B, #F59E0B);}
-  .node-icon.filter   { background: linear-gradient(135deg, #FBBF24, #D97706);}
-  .node-icon.formatter{ background: linear-gradient(135deg, #FCD34D, #EA8E0A);}
-  .node-icon.sheets   { background: linear-gradient(135deg, #FFC95A, #C97A0A);}
-  .node-icon.email    { background: linear-gradient(135deg, #FFB347, #E67E22);}
-  .node-icon svg { width: 18px; height: 18px; }
-
-  .node-meta { flex: 1; min-width: 0; }
-  .node-label {
-    font-size: 11px; font-weight: 600;
-    color: var(--text-3);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+  .shape-circle.selected {
+    animation: ringPulse 2s ease-in-out infinite;
   }
-  .node-title {
-    font-size: 15px; font-weight: 700;
-    color: var(--primary-600);
-    margin-top: 1px;
+  @keyframes ringPulse {
+    0%,100% { box-shadow: 0 0 0 4px rgba(245,158,11,0.30), 0 0 0 10px rgba(245,158,11,0.12), 0 10px 30px rgba(245,158,11,0.45), inset 0 -6px 14px rgba(180,90,0,0.15); }
+    50%     { box-shadow: 0 0 0 6px rgba(245,158,11,0.40), 0 0 0 16px rgba(245,158,11,0.10), 0 14px 36px rgba(245,158,11,0.55), inset 0 -6px 14px rgba(180,90,0,0.15); }
+  }
+
+  /* Hexagon (search/filter) */
+  .shape-hex {
+    width: 150px; height: 110px;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%);
+    filter: drop-shadow(0 8px 18px rgba(217,119,6,0.30));
+    position: relative;
+  }
+
+  /* Diamond (decision) */
+  .shape-diamond {
+    width: 130px; height: 130px;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    background: linear-gradient(135deg, #FCD34D 0%, #EAB308 100%);
+    filter: drop-shadow(0 8px 18px rgba(234,179,8,0.32));
+    position: relative;
+  }
+  .shape-diamond .shape-icon { max-width: 80px; }
+
+  /* Rectangle (action) */
+  .shape-rect {
+    background: var(--surface);
+    border: 2px solid var(--border-strong);
+    border-radius: 14px;
+    padding: 12px 16px;
+    min-width: 160px;
+    box-shadow: 0 6px 18px rgba(180,120,0,0.12);
+    position: relative;
+  }
+  .shape-rect.solid {
+    background: linear-gradient(135deg, #FFC95A 0%, #C97A0A 100%);
+    border-color: transparent;
+    color: white;
+  }
+  .rect-label {
+    font-size: 10px; font-weight: 700;
+    color: var(--text-3);
+    text-transform: uppercase; letter-spacing: 0.07em;
+    margin-bottom: 2px;
+  }
+  .shape-rect.solid .rect-label { color: rgba(255,255,255,0.78); }
+  .rect-name {
+    font-size: 14px; font-weight: 700; color: var(--text);
     letter-spacing: -0.01em;
   }
-  .node-sub {
-    font-size: 13px;
-    color: var(--text);
-    margin-top: 1px;
+  .shape-rect.solid .rect-name { color: white; }
+  .rect-sub {
+    font-size: 11px; color: var(--text-2); margin-top: 2px;
     font-weight: 500;
   }
-  .node-menu {
-    width: 28px; height: 28px; border-radius: 7px;
-    display: grid; place-items: center;
-    color: var(--text-3); cursor: pointer;
-    transition: all .15s;
-  }
-  .node-menu:hover { background: var(--surface-2); color: var(--text); }
-  .node-menu svg { width: 16px; height: 16px; }
+  .shape-rect.solid .rect-sub { color: rgba(255,255,255,0.85); }
 
-  .node-note {
-    padding: 10px 14px;
-    background: var(--surface-2);
-    border: 1px dashed var(--border-strong);
-    border-radius: 999px;   /* pill-shaped notes field */
-    font-size: 12px;
-    color: var(--text-3);
-    margin-top: 10px;
-    transition: all .15s;
-  }
-  .node:hover .node-note { border-color: var(--primary); color: var(--text-2); }
-
-  .node-status {
+  /* Ports (small connection dots) */
+  .port {
     position: absolute;
-    top: -8px; right: -8px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--surface);
+    z-index: 3;
+  }
+  .port.out  { right: -5px; top: 50%; transform: translateY(-50%); background: var(--primary); }
+  .port.in   { left: -5px; top: 50%; transform: translateY(-50%); background: var(--text-3); }
+  .port.yes  { right: 6%; top: 26%; background: var(--green); }
+  .port.no   { right: 6%; bottom: 14%; background: var(--red); }
+  .port::after {
+    content: '';
+    position: absolute; inset: -3px;
+    border-radius: 50%;
+    background: inherit;
+    opacity: .35;
+    animation: portPing 1.8s ease-in-out infinite;
+  }
+  @keyframes portPing {
+    0%,100% { transform: scale(1);  opacity: .35; }
+    50%     { transform: scale(1.8); opacity: 0; }
+  }
+
+  /* Y/N branch badges floating near diamond */
+  .branch-tag {
+    position: absolute;
     width: 22px; height: 22px;
     border-radius: 50%;
-    background: white;
     display: grid; place-items: center;
-    box-shadow: var(--shadow-sm);
-    border: 2px solid white;
-  }
-  .node-status.ok    { background: var(--green); }
-  .node-status.warn  { background: var(--amber); }
-  .node-status svg   { width: 12px; height: 12px; color: white; stroke-width: 3; }
-
-  /* Connector between nodes */
-  .connector {
-    height: 56px;
-    position: relative;
-    width: 2px;
-    display: flex; flex-direction: column; align-items: center;
-  }
-  .connector::before {
-    content: '';
-    position: absolute;
-    left: 50%; transform: translateX(-50%);
-    top: 0; bottom: 0;
-    width: 2px;
-    background: linear-gradient(to bottom, rgba(245,158,11,0.55), rgba(245,158,11,0.18));
-    border-radius: 2px;
-  }
-  .connector::after {
-    content: '';
-    position: absolute;
-    left: 50%; transform: translateX(-50%);
-    top: 0;
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--primary);
-    box-shadow: 0 0 10px rgba(245,158,11,0.7);
-    animation: flow 2s linear infinite;
-  }
-  @keyframes flow {
-    0%   { top: -3px; opacity: 0; }
-    20%  { opacity: 1; }
-    80%  { opacity: 1; }
-    100% { top: calc(100% - 3px); opacity: 0; }
-  }
-  .connector .plus {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    background: white;
-    border: 1.5px dashed var(--primary);
-    color: var(--primary);
-    display: grid; place-items: center;
-    cursor: pointer;
-    transition: all .2s;
-    z-index: 2;
-  }
-  .connector .plus:hover {
-    background: var(--primary);
+    font-size: 11px; font-weight: 800;
     color: white;
-    border-style: solid;
-    transform: translate(-50%, -50%) scale(1.15) rotate(90deg);
-    box-shadow: 0 4px 12px rgba(245,158,11,0.55);
+    z-index: 4;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.20);
+    border: 2px solid var(--canvas);
   }
-  .connector .plus svg { width: 14px; height: 14px; stroke-width: 2.5; }
+  .branch-tag.y { background: var(--green); }
+  .branch-tag.n { background: var(--red); }
 
-  /* End-of-flow marker */
-  .end-cap {
-    margin-top: 10px;
-    padding: 10px 18px;
-    background: rgba(245,158,11,0.08);
-    border: 1.5px dashed rgba(245,158,11,0.40);
-    color: var(--primary-600);
-    border-radius: 999px;   /* pill */
-    font-size: 12px; font-weight: 600;
-    display: inline-flex; align-items: center; gap: 6px;
+  /* Tabs (Design / Monitor) — reference inspired */
+  .view-tabs {
+    display: flex; gap: 4px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px;
+  }
+  .view-tab {
+    padding: 6px 18px;
+    border-radius: 999px;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-2);
     cursor: pointer;
-    transition: all .2s;
+    transition: all .15s;
   }
-  .end-cap:hover {
-    background: var(--primary-50);
-    border-style: solid;
-    transform: scale(1.05);
+  .view-tab.active {
+    background: var(--gradient);
+    color: white;
+    box-shadow: 0 4px 10px rgba(245,158,11,0.35);
   }
-  .end-cap svg { width: 14px; height: 14px; }
 
   /* Zoom controls */
   .zoom {
@@ -712,6 +705,11 @@
       </div>
       <span class="status-chip"><span class="dot"></span> Published</span>
 
+      <div class="view-tabs" style="margin: 0 auto;">
+        <div class="view-tab active">Design</div>
+        <div class="view-tab">Monitor</div>
+      </div>
+
       <div class="topbar-actions">
         <button class="icon-btn" title="Undo">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
@@ -748,112 +746,113 @@
         <div class="particle"></div>
 
         <div class="flow">
-          <div class="flow-inner">
+          <div class="flow-stage">
 
-            <!-- TRIGGER NODE -->
-            <div class="node selected">
-              <div class="node-status ok">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+            <!-- SVG connections layer -->
+            <svg class="connections" viewBox="0 0 1200 640" preserveAspectRatio="none">
+              <!-- Trigger → Hex -->
+              <path id="p1" class="conn-line" d="M 195 320 C 215 320, 220 320, 240 320"/>
+              <circle r="4" class="conn-dot">
+                <animateMotion dur="2s" repeatCount="indefinite"><mpath href="#p1"/></animateMotion>
+              </circle>
+
+              <!-- Hex → Diamond -->
+              <path id="p2" class="conn-line" d="M 390 320 C 410 320, 420 320, 445 320"/>
+              <circle r="4" class="conn-dot">
+                <animateMotion dur="2s" begin=".4s" repeatCount="indefinite"><mpath href="#p2"/></animateMotion>
+              </circle>
+
+              <!-- Diamond Yes (top) → Formatter -->
+              <path id="p3" class="conn-line yes" d="M 568 268 C 605 220, 600 180, 640 180"/>
+              <circle r="4" class="conn-dot yes">
+                <animateMotion dur="2.4s" begin=".7s" repeatCount="indefinite"><mpath href="#p3"/></animateMotion>
+              </circle>
+
+              <!-- Diamond No (bottom) → Skip -->
+              <path id="p4" class="conn-line no" d="M 568 372 C 605 420, 600 470, 640 470"/>
+              <circle r="4" class="conn-dot no">
+                <animateMotion dur="2.4s" begin="1s" repeatCount="indefinite"><mpath href="#p4"/></animateMotion>
+              </circle>
+
+              <!-- Formatter → Sheets -->
+              <path id="p5" class="conn-line" d="M 800 180 C 820 180, 825 180, 840 180"/>
+              <circle r="4" class="conn-dot">
+                <animateMotion dur="2s" begin="1.2s" repeatCount="indefinite"><mpath href="#p5"/></animateMotion>
+              </circle>
+
+              <!-- Sheets → Notify -->
+              <path id="p6" class="conn-line" d="M 1000 180 C 1020 180, 1025 180, 1040 180"/>
+              <circle r="4" class="conn-dot">
+                <animateMotion dur="2s" begin="1.5s" repeatCount="indefinite"><mpath href="#p6"/></animateMotion>
+              </circle>
+            </svg>
+
+            <!-- TRIGGER (circle) -->
+            <div class="flow-node shape-circle selected" style="left: 75px; top: 265px;">
+              <div class="shape-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+                <span class="name">Google<br/>Calendar</span>
               </div>
-              <div class="node-head">
-                <div class="node-icon gcal">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zM7 12h5v5H7z"/></svg>
-                </div>
-                <div class="node-meta">
-                  <div class="node-label">Trigger</div>
-                  <div class="node-title">Google Calendar</div>
-                  <div class="node-sub">New Event</div>
-                </div>
-                <div class="node-menu">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
-                </div>
+              <div class="port out"></div>
+            </div>
+
+            <!-- FILTER (hexagon) -->
+            <div class="flow-node shape-hex" style="left: 240px; top: 265px;">
+              <div class="shape-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                <span class="name">Filter</span>
               </div>
-              <div class="node-note">Add notes here…</div>
+              <div class="port in"></div>
+              <div class="port out"></div>
             </div>
 
-            <div class="connector">
-              <div class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-            </div>
-
-            <!-- FILTER NODE -->
-            <div class="node">
-              <div class="node-status ok">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+            <!-- DECISION (diamond) -->
+            <div class="flow-node shape-diamond" style="left: 445px; top: 255px;">
+              <div class="shape-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                <span class="name">Has<br/>Guest?</span>
               </div>
-              <div class="node-head">
-                <div class="node-icon filter">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-                </div>
-                <div class="node-meta">
-                  <div class="node-label">Action</div>
-                  <div class="node-title">Filter By Connect</div>
-                  <div class="node-sub">Only continue if…</div>
-                </div>
-                <div class="node-menu">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
-                </div>
-              </div>
-              <div class="node-note">Add notes here…</div>
+              <div class="port in" style="left: 50%; top: 50%; transform: translate(-50%, -50%) translateX(-65px);"></div>
+              <div class="port yes" style="right: 22%; top: 22%;"></div>
+              <div class="port no" style="right: 22%; bottom: 22%;"></div>
+              <span class="branch-tag y" style="top: 16%; right: 4%;">Y</span>
+              <span class="branch-tag n" style="bottom: 12%; right: 4%;">N</span>
             </div>
 
-            <div class="connector">
-              <div class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            <!-- FORMATTER (rect) - Yes branch -->
+            <div class="flow-node shape-rect" style="left: 640px; top: 145px;">
+              <div class="rect-label">Action</div>
+              <div class="rect-name">Formatter</div>
+              <div class="rect-sub">Date / Time</div>
+              <div class="port in"></div>
+              <div class="port out"></div>
             </div>
 
-            <!-- FORMATTER NODE -->
-            <div class="node">
-              <div class="node-status ok">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
-              </div>
-              <div class="node-head">
-                <div class="node-icon formatter">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                </div>
-                <div class="node-meta">
-                  <div class="node-label">Action</div>
-                  <div class="node-title">Formatter By Connect</div>
-                  <div class="node-sub">Date / Time</div>
-                </div>
-                <div class="node-menu">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
-                </div>
-              </div>
-              <div class="node-note">Add notes here…</div>
+            <!-- SHEETS (rect solid) -->
+            <div class="flow-node shape-rect solid" style="left: 840px; top: 145px;">
+              <div class="rect-label">Action</div>
+              <div class="rect-name">Google Sheets</div>
+              <div class="rect-sub">Create row</div>
+              <div class="port in"></div>
+              <div class="port out"></div>
             </div>
 
-            <div class="connector">
-              <div class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            <!-- NOTIFY (rect) -->
+            <div class="flow-node shape-rect" style="left: 1040px; top: 145px;">
+              <div class="rect-label">Action</div>
+              <div class="rect-name">Notify Slack</div>
+              <div class="rect-sub">Channel: #leads</div>
+              <div class="port in"></div>
             </div>
 
-            <!-- SHEETS NODE -->
-            <div class="node">
-              <div class="node-status ok">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
-              </div>
-              <div class="node-head">
-                <div class="node-icon sheets">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
-                </div>
-                <div class="node-meta">
-                  <div class="node-label">Action</div>
-                  <div class="node-title">Google Sheets</div>
-                  <div class="node-sub">Create Spreadsheet Row</div>
-                </div>
-                <div class="node-menu">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
-                </div>
-              </div>
-              <div class="node-note">Add notes here…</div>
+            <!-- SKIP (rect) - No branch -->
+            <div class="flow-node shape-rect" style="left: 640px; top: 435px;">
+              <div class="rect-label">End</div>
+              <div class="rect-name">Skip</div>
+              <div class="rect-sub">No guest invited</div>
+              <div class="port in"></div>
             </div>
 
-            <div class="connector">
-              <div class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-            </div>
-
-            <div class="end-cap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Add next step
-            </div>
           </div>
         </div>
 
