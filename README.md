@@ -4,7 +4,9 @@ A modern, professional redesign of the Appy Pie Automate dashboard. Single-file 
 
 ## Preview
 
-Open `dashboard-redesign.html` directly in any modern browser — no build step, no dependencies beyond Google Fonts (Inter).
+Open `index.html` directly in any modern browser — no build step, no dependencies beyond Google Fonts (Inter).
+
+Live demo: deployed via Vercel.
 
 ## What's inside
 
@@ -26,9 +28,17 @@ Open `dashboard-redesign.html` directly in any modern browser — no build step,
 
 ```
 .
-├── dashboard-redesign.html   # The full mockup
+├── index.html   # The full mockup
 └── README.md
 ```
+
+## Deploy
+
+This is a static, single-file site. Deploy to any static host:
+
+- **Vercel** — import the repo at https://vercel.com/new, accept defaults, click Deploy
+- **Netlify** — drag the folder onto https://app.netlify.com/drop
+- **GitHub Pages** — Settings → Pages → Deploy from `main` / root
 
 ## License
 
