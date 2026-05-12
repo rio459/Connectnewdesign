@@ -745,7 +745,7 @@
           <div class="flow-stage">
 
             <!-- SVG connections layer -->
-            <svg class="connections" viewBox="0 0 1200 640" preserveAspectRatio="none">
+            <svg class="connections" viewBox="0 0 1440 640" preserveAspectRatio="none">
               <!-- Trigger → Hex -->
               <path id="p1" class="conn-line" d="M 195 320 C 215 320, 220 320, 240 320"/>
               <circle r="4" class="conn-dot">
@@ -759,32 +759,32 @@
               </circle>
 
               <!-- Diamond Yes (top) → Formatter -->
-              <path id="p3" class="conn-line yes" d="M 568 268 C 605 220, 600 180, 640 180"/>
+              <path id="p3" class="conn-line yes" d="M 568 270 C 615 235, 615 185, 670 185"/>
               <circle r="4" class="conn-dot yes">
                 <animateMotion dur="2.4s" begin=".7s" repeatCount="indefinite"><mpath href="#p3"/></animateMotion>
               </circle>
 
               <!-- Diamond No (bottom) → Skip -->
-              <path id="p4" class="conn-line no" d="M 568 372 C 605 420, 600 470, 640 470"/>
+              <path id="p4" class="conn-line no" d="M 568 370 C 615 405, 615 455, 670 455"/>
               <circle r="4" class="conn-dot no">
                 <animateMotion dur="2.4s" begin="1s" repeatCount="indefinite"><mpath href="#p4"/></animateMotion>
               </circle>
 
               <!-- Formatter → Sheets -->
-              <path id="p5" class="conn-line" d="M 800 180 C 820 180, 825 180, 840 180"/>
+              <path id="p5" class="conn-line" d="M 850 185 C 875 185, 880 185, 910 185"/>
               <circle r="4" class="conn-dot">
                 <animateMotion dur="2s" begin="1.2s" repeatCount="indefinite"><mpath href="#p5"/></animateMotion>
               </circle>
 
               <!-- Sheets → Notify -->
-              <path id="p6" class="conn-line" d="M 1000 180 C 1005 180, 1008 180, 1010 180"/>
+              <path id="p6" class="conn-line" d="M 1090 185 C 1115 185, 1120 185, 1150 185"/>
               <circle r="4" class="conn-dot">
                 <animateMotion dur="2s" begin="1.5s" repeatCount="indefinite"><mpath href="#p6"/></animateMotion>
               </circle>
             </svg>
 
             <!-- TRIGGER (circle) -->
-            <div class="flow-node shape-circle selected" style="left: 75px; top: 265px;">
+            <div class="flow-node shape-circle selected" style="left: 80px; top: 265px;">
               <div class="shape-icon">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
                 <span class="name">Google<br/>Calendar</span>
@@ -808,15 +808,12 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
                 <span class="name">Has<br/>Guest?</span>
               </div>
-              <div class="port in" style="left: 50%; top: 50%; transform: translate(-50%, -50%) translateX(-65px);"></div>
-              <div class="port yes" style="right: 22%; top: 22%;"></div>
-              <div class="port no" style="right: 22%; bottom: 22%;"></div>
               <span class="branch-tag y" style="top: 16%; right: 4%;">Y</span>
               <span class="branch-tag n" style="bottom: 12%; right: 4%;">N</span>
             </div>
 
             <!-- FORMATTER (rect) - Yes branch -->
-            <div class="flow-node shape-rect" style="left: 640px; top: 145px;">
+            <div class="flow-node shape-rect" style="left: 670px; top: 150px;">
               <div class="rect-label">Action</div>
               <div class="rect-name">Formatter</div>
               <div class="rect-sub">Date / Time</div>
@@ -825,7 +822,7 @@
             </div>
 
             <!-- SHEETS (rect solid) -->
-            <div class="flow-node shape-rect solid" style="left: 840px; top: 145px;">
+            <div class="flow-node shape-rect solid" style="left: 910px; top: 150px;">
               <div class="rect-label">Action</div>
               <div class="rect-name">Google Sheets</div>
               <div class="rect-sub">Create row</div>
@@ -834,7 +831,7 @@
             </div>
 
             <!-- NOTIFY (rect) -->
-            <div class="flow-node shape-rect" style="left: 1010px; top: 145px;">
+            <div class="flow-node shape-rect" style="left: 1150px; top: 150px;">
               <div class="rect-label">Action</div>
               <div class="rect-name">Notify Slack</div>
               <div class="rect-sub">Channel: #leads</div>
@@ -842,7 +839,7 @@
             </div>
 
             <!-- SKIP (rect) - No branch -->
-            <div class="flow-node shape-rect" style="left: 640px; top: 435px;">
+            <div class="flow-node shape-rect" style="left: 670px; top: 420px;">
               <div class="rect-label">End</div>
               <div class="rect-name">Skip</div>
               <div class="rect-sub">No guest invited</div>
