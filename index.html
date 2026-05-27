@@ -430,7 +430,7 @@
   .mini-fill { height: 100%; border-radius: 999px; transition: width .4s ease; }
   .mini-fill.purple { background: linear-gradient(90deg, #B8FF1A, #88E600); }
   .mini-fill.blue   { background: linear-gradient(90deg, #4666FF, #7BAFFF); }
-  .mini-fill.orange { background: linear-gradient(90deg, #B8FF1A, #FDD37F); }
+  .mini-fill.orange { background: linear-gradient(90deg, #B8FF1A, rgba(255,255,255,0.85)); }
 
   .plan-status {
     display: flex; align-items: center; gap: 6px;
@@ -577,8 +577,8 @@
   .status .dot { width: 6px; height: 6px; border-radius: 50%; }
   .status.active  { background: var(--green-50); color: var(--green);}
   .status.active .dot { background: var(--green); box-shadow: 0 0 0 3px rgba(16,185,129,0.18);}
-  .status.draft   { background: rgba(252,211,77,0.16); color: #FDD37F;}
-  .status.draft .dot { background: #FDD37F;}
+  .status.draft   { background: rgba(255,255,255,0.08); color: #E5E7EB;}
+  .status.draft .dot { background: #E5E7EB;}
   .status.paused  { background: #F1F5F9; color: var(--text-2);}
   .status.paused .dot { background: var(--text-2);}
 
@@ -625,7 +625,7 @@
   }
   .activity-icon.success { background: var(--green-50); color: var(--green);}
   .activity-icon.info    { background: var(--primary-50); color: var(--primary);}
-  .activity-icon.warning { background: rgba(252,211,77,0.16); color: #FDD37F;}
+  .activity-icon.warning { background: rgba(255,255,255,0.08); color: #E5E7EB;}
   .activity-icon svg { width: 16px; height: 16px; }
   .activity-text { flex: 1; }
   .activity-title { font-weight: 600; font-size: 13px; color: var(--text); }
