@@ -393,8 +393,8 @@
   .ai-block {
     position: relative; z-index: 1;
     text-align: center;
-    margin: 0 0 56px;
-    animation: aiIn .8s cubic-bezier(.2,.7,.3,1) .6s both;
+    margin: 8px 0 0;
+    animation: aiIn .8s cubic-bezier(.2,.7,.3,1) .9s both;
   }
   @keyframes aiIn {
     from { opacity: 0; transform: translateY(20px); }
@@ -532,10 +532,10 @@
     position: relative; z-index: 1;
   }
   .u-pill { animation: statIn .6s cubic-bezier(.2,.7,.3,1) both;}
-  .u-pill:nth-child(1){ animation-delay: .75s;}
-  .u-pill:nth-child(2){ animation-delay: .82s;}
-  .u-pill:nth-child(3){ animation-delay: .89s;}
-  .u-pill:nth-child(4){ animation-delay: .96s;}
+  .u-pill:nth-child(1){ animation-delay: .62s;}
+  .u-pill:nth-child(2){ animation-delay: .68s;}
+  .u-pill:nth-child(3){ animation-delay: .74s;}
+  .u-pill:nth-child(4){ animation-delay: .80s;}
   .u-eyebrow {
     display: flex; align-items: center; gap: 8px;
     font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
@@ -1189,33 +1189,6 @@
         </div>
       </div>
 
-      <!-- AI prompt centerpiece -->
-      <div class="ai-block">
-        <span class="ai-eyebrow"><span class="pulse"></span> Copilot · Beta</span>
-        <h2>What would you like to automate today?</h2>
-        <p>Describe a workflow in plain English and let Copilot build it for you in seconds — no code, no friction.</p>
-
-        <div class="ai-input">
-          <div class="ai-input-inner">
-            <div class="ai-spark">
-              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 0l1.6 7.4L21 9l-7.4 1.6L12 18l-1.6-7.4L3 9l7.4-1.6L12 0z"/></svg>
-            </div>
-            <input type="text" placeholder="e.g. Send a Slack message when a new Stripe payment arrives…" />
-            <button class="submit-btn">
-              Start
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <div class="ai-suggestions">
-          <div class="chip">📧 Summarize daily emails to Notion</div>
-          <div class="chip">📊 Log Stripe payments to Sheets</div>
-          <div class="chip">🔔 Slack alerts from Jira</div>
-          <div class="chip">📅 Auto-create calendar events</div>
-        </div>
-      </div>
-
       <!-- Usage + wallet inline strip -->
       <div class="usage-strip">
         <div class="u-pill">
@@ -1259,6 +1232,33 @@
               Add Fund
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- AI prompt centerpiece (moved below usage) -->
+      <div class="ai-block">
+        <span class="ai-eyebrow"><span class="pulse"></span> Copilot · Beta</span>
+        <h2>What would you like to automate today?</h2>
+        <p>Describe a workflow in plain English and let Copilot build it for you in seconds — no code, no friction.</p>
+
+        <div class="ai-input">
+          <div class="ai-input-inner">
+            <div class="ai-spark">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 0l1.6 7.4L21 9l-7.4 1.6L12 18l-1.6-7.4L3 9l7.4-1.6L12 0z"/></svg>
+            </div>
+            <input type="text" placeholder="e.g. Send a Slack message when a new Stripe payment arrives…" />
+            <button class="submit-btn">
+              Start
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="ai-suggestions">
+          <div class="chip">📧 Summarize daily emails to Notion</div>
+          <div class="chip">📊 Log Stripe payments to Sheets</div>
+          <div class="chip">🔔 Slack alerts from Jira</div>
+          <div class="chip">📅 Auto-create calendar events</div>
         </div>
       </div>
 
@@ -1554,7 +1554,7 @@
     document.querySelectorAll('.u-bar-fill').forEach(function (el, i) {
       var w = el.getAttribute('data-w') || 0;
       el.style.width = '0%';
-      setTimeout(function () { el.style.width = w + '%'; }, 850 + i * 100);
+      setTimeout(function () { el.style.width = w + '%'; }, 700 + i * 90);
     });
   }
   if (document.readyState === 'loading') {
