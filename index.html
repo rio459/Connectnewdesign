@@ -269,10 +269,359 @@
     box-shadow: 0 2px 8px rgba(255,255,255,0.18);
   }
 
-  /* Page Header */
-  .page-header { margin-bottom: 24px; }
-  .page-header h1 { margin: 0 0 4px; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
-  .page-header p  { margin: 0; color: var(--text-2); font-size: 14px; }
+  /* ===== Boxless hero — magazine-style ===== */
+  .hero-area {
+    position: relative;
+    padding: 8px 0 40px;
+    margin-bottom: 28px;
+  }
+  .hero-area::before {
+    /* Ambient aurora */
+    content: '';
+    position: absolute;
+    inset: -40px -80px auto -80px;
+    height: 480px;
+    background:
+      radial-gradient(600px 220px at 30% 0%, rgba(255,255,255,0.06), transparent 60%),
+      radial-gradient(500px 200px at 80% 30%, rgba(120,180,255,0.06), transparent 65%);
+    filter: blur(20px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Page header — bigger and animated */
+  .page-header { margin: 0 0 36px; position: relative; z-index: 1; }
+  .page-header h1 {
+    margin: 0 0 6px;
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    animation: titleIn .7s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .page-header h1 .wave {
+    display: inline-block;
+    transform-origin: 70% 70%;
+    animation: wave 2.4s ease-in-out infinite;
+  }
+  @keyframes wave {
+    0%,100% { transform: rotate(0); }
+    10%,30% { transform: rotate(14deg); }
+    20%,40% { transform: rotate(-8deg); }
+    50%     { transform: rotate(0); }
+  }
+  @keyframes titleIn {
+    from { opacity: 0; transform: translateY(10px); filter: blur(4px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+  .page-header p {
+    margin: 0;
+    color: var(--text-2);
+    font-size: 15px;
+    animation: titleIn .7s cubic-bezier(.2,.7,.3,1) .15s both;
+  }
+
+  /* Stat strip — inline numbers, no boxes */
+  .stat-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    position: relative; z-index: 1;
+    margin-bottom: 56px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 0;
+  }
+  .stat-item {
+    text-align: left;
+    padding: 0 28px;
+    position: relative;
+    animation: statIn .7s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .stat-item:nth-child(1) { animation-delay: .25s; }
+  .stat-item:nth-child(2) { animation-delay: .35s; }
+  .stat-item:nth-child(3) { animation-delay: .45s; }
+  .stat-item:nth-child(4) { animation-delay: .55s; }
+  @keyframes statIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .stat-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 10%; bottom: 10%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--border-strong), transparent);
+  }
+  .stat-item:first-child { padding-left: 0; }
+  .stat-item:last-child  { padding-right: 0; }
+
+  .stat-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--text-3);
+    font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .stat-eyebrow svg { width: 14px; height: 14px; opacity: .8; }
+  .stat-big {
+    font-size: 56px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--text);
+    background: linear-gradient(180deg, #FFFFFF 0%, #94A3B8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: transform .3s cubic-bezier(.2,.7,.3,1);
+  }
+  .stat-item:hover .stat-big { transform: translateY(-2px) scale(1.03); }
+  .stat-sub { font-size: 13px; color: var(--text-2); margin-top: 8px; font-weight: 500;}
+  .stat-trend {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 600;
+    margin-top: 10px;
+  }
+  .stat-trend.up   { color: #4ADE80; }
+  .stat-trend.down { color: #FF8B95; }
+  .stat-trend .spark {
+    margin-left: 6px;
+    width: 32px; height: 14px;
+    opacity: .8;
+  }
+
+  /* AI prompt area — centerpiece */
+  .ai-block {
+    position: relative; z-index: 1;
+    text-align: center;
+    margin: 0 0 56px;
+    animation: aiIn .8s cubic-bezier(.2,.7,.3,1) .6s both;
+  }
+  @keyframes aiIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .ai-block .ai-eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+    color: var(--text-2);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .ai-block .ai-eyebrow .pulse {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #4ADE80;
+    box-shadow: 0 0 8px rgba(74,222,128,0.6);
+    animation: livePulse 1.4s ease-in-out infinite;
+  }
+  @keyframes livePulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(74,222,128,0.6); }
+    50%     { box-shadow: 0 0 0 6px rgba(74,222,128,0); }
+  }
+  .ai-block h2 {
+    margin: 0 0 8px;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    background: linear-gradient(135deg, #FFFFFF 0%, #94A3B8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .ai-block p {
+    margin: 0 auto 24px;
+    max-width: 540px;
+    color: var(--text-2);
+    font-size: 14px;
+  }
+
+  /* AI input bar — glowing */
+  .ai-input {
+    max-width: 720px;
+    margin: 0 auto;
+    position: relative;
+    padding: 4px;
+    border-radius: 999px;
+    background: linear-gradient(120deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04), rgba(255,255,255,0.16));
+    background-size: 200% 200%;
+    animation: borderShift 6s ease infinite;
+  }
+  @keyframes borderShift {
+    0%,100% { background-position: 0% 50%; }
+    50%     { background-position: 100% 50%; }
+  }
+  .ai-input-inner {
+    background: rgba(10,14,26,0.85);
+    border-radius: 999px;
+    padding: 14px 8px 14px 22px;
+    display: flex; align-items: center; gap: 10px;
+    backdrop-filter: blur(10px);
+  }
+  .ai-input-inner .ai-spark {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    color: #4ADE80;
+    animation: spin 6s linear infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .ai-input-inner input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+    padding: 4px 0;
+  }
+  .ai-input-inner input::placeholder { color: var(--text-3); }
+  .ai-input-inner .submit-btn {
+    background: linear-gradient(135deg, #FFFFFF, #D1D5DB);
+    color: #06080F;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 20px;
+    font-weight: 700; font-size: 13px;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 6px 18px rgba(255,255,255,0.25);
+  }
+  .ai-input-inner .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(255,255,255,0.35); }
+  .ai-input-inner .submit-btn svg { width: 14px; height: 14px; }
+
+  .ai-suggestions {
+    display: flex; gap: 8px;
+    justify-content: center;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    padding: 6px 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    font-size: 12px; font-weight: 500;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .chip:hover {
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.35);
+    color: var(--text);
+    transform: translateY(-1px);
+  }
+
+  /* Usage / wallet inline strip */
+  .usage-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1.4fr;
+    gap: 36px;
+    align-items: center;
+    padding: 28px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+    position: relative; z-index: 1;
+  }
+  .u-pill { animation: statIn .6s cubic-bezier(.2,.7,.3,1) both;}
+  .u-pill:nth-child(1){ animation-delay: .75s;}
+  .u-pill:nth-child(2){ animation-delay: .82s;}
+  .u-pill:nth-child(3){ animation-delay: .89s;}
+  .u-pill:nth-child(4){ animation-delay: .96s;}
+  .u-eyebrow {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 10px;
+  }
+  .u-eyebrow svg { width: 13px; height: 13px; }
+  .u-row {
+    display: flex; align-items: baseline; gap: 8px;
+    margin-bottom: 8px;
+  }
+  .u-val {
+    font-size: 22px; font-weight: 700;
+    color: var(--text); letter-spacing: -0.02em;
+  }
+  .u-limit { color: var(--text-3); font-size: 14px; font-weight: 500;}
+  .u-pct {
+    margin-left: auto;
+    font-size: 11px; font-weight: 700;
+    color: #4ADE80;
+  }
+  .u-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .u-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0.40), rgba(255,255,255,0.95));
+    border-radius: 999px;
+    transition: width 1.2s cubic-bezier(.2,.7,.3,1);
+  }
+
+  .wallet-cluster {
+    display: flex; align-items: center; gap: 20px;
+    justify-content: flex-end;
+    border-left: 1px solid var(--border);
+    padding-left: 28px;
+  }
+  .wallet-cluster .w-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-3);
+  }
+  .wallet-cluster .w-val {
+    font-size: 22px; font-weight: 700;
+    color: var(--text);
+    margin-top: 4px;
+  }
+  .wallet-cluster .w-plan {
+    font-size: 11px; color: var(--text-2); margin-top: 4px;
+  }
+  .wallet-cluster .w-plan b { color: var(--text); font-weight: 600;}
+  .w-actions { display: flex; flex-direction: column; gap: 8px; }
+  .w-actions .btn-add {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--text);
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .w-actions .btn-add:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.4); }
+  .w-actions .btn-up {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 999px;
+    border: none;
+    background: linear-gradient(135deg, #FFFFFF, #D1D5DB);
+    color: #06080F;
+    font-size: 12px; font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+    box-shadow: 0 4px 14px rgba(255,255,255,0.20);
+  }
+  .w-actions .btn-up:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(255,255,255,0.30);}
+  .w-actions svg { width: 12px; height: 12px;}
+
+  @media (max-width: 1200px) {
+    .stat-strip   { grid-template-columns: 1fr 1fr; gap: 24px 0; }
+    .stat-item:nth-child(2)::after { display: none; }
+    .usage-strip  { grid-template-columns: 1fr 1fr; }
+    .wallet-cluster { grid-column: 1 / -1; border-left: none; padding-left: 0; border-top: 1px solid var(--border); padding-top: 20px;}
+  }
 
   /* Stat Cards */
   .stats {
@@ -779,138 +1128,141 @@
       </div>
     </div>
 
-    <!-- Page header -->
-    <div class="page-header">
-      <h1>Welcome back, Rio 👋</h1>
-      <p>Here's what's happening with your automations today.</p>
-    </div>
+    <!-- ===== Boxless hero area ===== -->
+    <section class="hero-area">
 
-    <!-- Stats -->
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-icon purple">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
-        <div class="stat-label">Active Connects</div>
-        <div class="stat-value">24</div>
-        <span class="stat-delta up">▲ 12% this week</span>
-      </div>
-      <div class="stat">
-        <div class="stat-icon green">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <div class="stat-label">Tasks Completed</div>
-        <div class="stat-value">1,284</div>
-        <span class="stat-delta up">▲ 8.2% vs last week</span>
-      </div>
-      <div class="stat">
-        <div class="stat-icon orange">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        </div>
-        <div class="stat-label">Time Saved</div>
-        <div class="stat-value">47h</div>
-        <span class="stat-delta up">▲ 4.1h this week</span>
-      </div>
-      <div class="stat">
-        <div class="stat-icon blue">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        </div>
-        <div class="stat-label">Linked Accounts</div>
-        <div class="stat-value">9</div>
-        <span class="stat-delta down">▼ 1 disconnected</span>
-      </div>
-    </div>
-
-    <!-- Hero -->
-    <div class="hero">
-      <div class="quick-auto">
-        <span class="badge-beta">BETA</span>
-        <h2>Create a Quick Automation ✨</h2>
-        <p>Describe what you want to automate in plain English and let Copilot build your workflow in seconds. No-code, no friction.</p>
-        <div class="actions">
-          <button class="btn-light">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            Start with Copilot
-          </button>
-          <button class="btn-ghost-light">Browse Templates</button>
-        </div>
+      <!-- Welcome -->
+      <div class="page-header">
+        <h1>Welcome back, Rio <span class="wave">👋</span></h1>
+        <p>Here's what's happening with your automations today.</p>
       </div>
 
-      <div class="usage-card">
-        <div class="usage-head">
-          <div>
-            <div class="usage-title">Usage Overview</div>
-            <div class="usage-sub">Current billing cycle</div>
-          </div>
-          <span class="plan-chip">Free Plan</span>
-        </div>
-
-        <div class="usage-row">
-          <div class="usage-row-icon purple">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-          </div>
-          <div class="usage-row-body">
-            <div class="usage-row-head">
-              <span class="usage-row-label">Connects</span>
-              <span class="usage-row-val">4 <span class="muted">/ 5</span></span>
-            </div>
-            <div class="mini-bar"><div class="mini-fill purple" style="width:80%"></div></div>
-          </div>
-        </div>
-
-        <div class="usage-row">
-          <div class="usage-row-icon blue">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="usage-row-body">
-            <div class="usage-row-head">
-              <span class="usage-row-label">Tasks</span>
-              <span class="usage-row-val">1,284 <span class="muted">/ 2,000</span> <span class="pct">64%</span></span>
-            </div>
-            <div class="mini-bar"><div class="mini-fill blue" style="width:64%"></div></div>
-          </div>
-        </div>
-
-        <div class="usage-row">
-          <div class="usage-row-icon orange">
+      <!-- Inline stat strip -->
+      <div class="stat-strip">
+        <div class="stat-item">
+          <div class="stat-eyebrow">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Active Connects
           </div>
-          <div class="usage-row-body">
-            <div class="usage-row-head">
-              <span class="usage-row-label">MCP Servers</span>
-              <span class="usage-row-val">12 <span class="muted">/ 100</span></span>
-            </div>
-            <div class="mini-bar"><div class="mini-fill orange" style="width:12%"></div></div>
+          <div class="stat-big" data-target="24">0</div>
+          <div class="stat-trend up">▲ 12% this week
+            <svg class="spark" viewBox="0 0 32 14" preserveAspectRatio="none">
+              <polyline fill="none" stroke="#4ADE80" stroke-width="1.5" points="0,10 5,7 10,8 14,4 19,6 24,2 32,3"/>
+            </svg>
           </div>
         </div>
-
-        <div class="plan-status">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Renews in 14 days · May 26, 2026
-        </div>
-
-        <button class="upgrade-cta">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M5 16L3 6l5.5 4L12 4l3.5 6L21 6l-2 10H5z"/></svg>
-          Upgrade Plan
-        </button>
-
-        <div class="wallet">
-          <div class="wallet-left">
-            <div class="wallet-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
-            </div>
-            <div>
-              <div class="wallet-label">Wallet Balance</div>
-              <div class="wallet-val">$248.00</div>
-            </div>
+        <div class="stat-item">
+          <div class="stat-eyebrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Tasks Completed
           </div>
-          <button class="wallet-add">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add Fund
-          </button>
+          <div class="stat-big" data-target="1284" data-format="comma">0</div>
+          <div class="stat-trend up">▲ 8.2% vs last week
+            <svg class="spark" viewBox="0 0 32 14" preserveAspectRatio="none">
+              <polyline fill="none" stroke="#4ADE80" stroke-width="1.5" points="0,12 6,10 11,9 16,6 21,7 26,3 32,1"/>
+            </svg>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-eyebrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Time Saved
+          </div>
+          <div class="stat-big" data-target="47" data-suffix="h">0</div>
+          <div class="stat-trend up">▲ 4.1h this week
+            <svg class="spark" viewBox="0 0 32 14" preserveAspectRatio="none">
+              <polyline fill="none" stroke="#4ADE80" stroke-width="1.5" points="0,11 5,9 10,10 15,7 20,8 26,5 32,4"/>
+            </svg>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-eyebrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            Linked Accounts
+          </div>
+          <div class="stat-big" data-target="9">0</div>
+          <div class="stat-trend down">▼ 1 disconnected
+            <svg class="spark" viewBox="0 0 32 14" preserveAspectRatio="none">
+              <polyline fill="none" stroke="#FF8B95" stroke-width="1.5" points="0,4 5,5 10,3 15,7 20,8 26,10 32,11"/>
+            </svg>
+          </div>
         </div>
       </div>
-    </div>
+
+      <!-- AI prompt centerpiece -->
+      <div class="ai-block">
+        <span class="ai-eyebrow"><span class="pulse"></span> Copilot · Beta</span>
+        <h2>What would you like to automate today?</h2>
+        <p>Describe a workflow in plain English and let Copilot build it for you in seconds — no code, no friction.</p>
+
+        <div class="ai-input">
+          <div class="ai-input-inner">
+            <div class="ai-spark">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 0l1.6 7.4L21 9l-7.4 1.6L12 18l-1.6-7.4L3 9l7.4-1.6L12 0z"/></svg>
+            </div>
+            <input type="text" placeholder="e.g. Send a Slack message when a new Stripe payment arrives…" />
+            <button class="submit-btn">
+              Start
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="ai-suggestions">
+          <div class="chip">📧 Summarize daily emails to Notion</div>
+          <div class="chip">📊 Log Stripe payments to Sheets</div>
+          <div class="chip">🔔 Slack alerts from Jira</div>
+          <div class="chip">📅 Auto-create calendar events</div>
+        </div>
+      </div>
+
+      <!-- Usage + wallet inline strip -->
+      <div class="usage-strip">
+        <div class="u-pill">
+          <div class="u-eyebrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            Connects
+          </div>
+          <div class="u-row"><span class="u-val">4</span><span class="u-limit">/ 5</span><span class="u-pct">80%</span></div>
+          <div class="u-bar"><div class="u-bar-fill" data-w="80"></div></div>
+        </div>
+        <div class="u-pill">
+          <div class="u-eyebrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Tasks
+          </div>
+          <div class="u-row"><span class="u-val">1,284</span><span class="u-limit">/ 2,000</span><span class="u-pct">64%</span></div>
+          <div class="u-bar"><div class="u-bar-fill" data-w="64"></div></div>
+        </div>
+        <div class="u-pill">
+          <div class="u-eyebrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            MCP Servers
+          </div>
+          <div class="u-row"><span class="u-val">12</span><span class="u-limit">/ 100</span><span class="u-pct">12%</span></div>
+          <div class="u-bar"><div class="u-bar-fill" data-w="12"></div></div>
+        </div>
+
+        <div class="wallet-cluster u-pill">
+          <div>
+            <div class="w-label">Wallet</div>
+            <div class="w-val">$248.00</div>
+            <div class="w-plan"><b>Free</b> · Renews May 26</div>
+          </div>
+          <div class="w-actions">
+            <button class="btn-up">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 6l5.5 4L12 4l3.5 6L21 6l-2 10H5z"/></svg>
+              Upgrade
+            </button>
+            <button class="btn-add">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Fund
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
 
     <!-- Connects table -->
     <div class="section">
@@ -1171,6 +1523,47 @@
 
   </main>
 </div>
+
+<script>
+(function () {
+  // Animated count-up for big stat numbers
+  function animateNumber (el) {
+    var target = parseInt(el.getAttribute('data-target'), 10);
+    var suffix = el.getAttribute('data-suffix') || '';
+    var useComma = el.getAttribute('data-format') === 'comma';
+    var duration = 1100;
+    var start = null;
+    function step (ts) {
+      if (!start) start = ts;
+      var p = Math.min(1, (ts - start) / duration);
+      // Ease-out cubic
+      var eased = 1 - Math.pow(1 - p, 3);
+      var value = Math.round(target * eased);
+      el.textContent = (useComma ? value.toLocaleString() : value) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function init () {
+    document.querySelectorAll('.stat-big').forEach(function (el, i) {
+      // Slight stagger
+      setTimeout(function () { animateNumber(el); }, 300 + i * 120);
+    });
+    // Animate usage bars from 0 to target width
+    document.querySelectorAll('.u-bar-fill').forEach(function (el, i) {
+      var w = el.getAttribute('data-w') || 0;
+      el.style.width = '0%';
+      setTimeout(function () { el.style.width = w + '%'; }, 850 + i * 100);
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
 
 </body>
 </html>
